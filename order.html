@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        .payment-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-container h1 {
+            margin-bottom: 20px;
+        }
+
+        .payment-summary p {
+            margin: 5px 0;
+            font-size: 1.2em;
+        }
+
+        .payment-form {
+            margin-top: 20px;
+        }
+
+        .payment-form input,
+        .payment-form button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .payment-form button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .payment-form button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+     
+    </header>
+    
+    <main>
+        <div class="payment-container">
+            <h1>Payment Details</h1>
+            <div class="payment-summary" id="orderSummary"></div>
+            <form class="payment-form" id="paymentForm">
+                <input type="text" id="cardNumber" placeholder="Card Number" required>
+                <input type="text" id="cardHolder" placeholder="Card Holder Name" required>
+                <input type="text" id="expiryDate" placeholder="Expiry Date (MM/YY)" required>
+                <input type="text" id="cvv" placeholder="CVV" required>
+                <button type="submit">Complete Payment</button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 www.mesho.com. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function fetchOrder() {
+            return JSON.parse(localStorage.getItem('order')) || {};
+        }
+
+        function renderOrderSummary(order) {
+            const orderSummaryElement = document.getElementById('orderSummary');
+            const { items, total } = order;
+            
+            const itemsHTML = items.map(item => `
+                <p>${item.title} - $${item.price.toFixed(2)}</p>
+            `).join('');
+
+            orderSummaryElement.innerHTML = `
+                <h2>Order Summary</h2>
+                ${itemsHTML}
+                <p>Total: $${total.toFixed(2)}</p>
+            `;
+        }
+
+        function handlePayment(event) {
+            event.preventDefault();
+           
+            localStorage.removeItem('order');
+            alert("Payment successful! Thank you for your purchase.");
+            window.location.href = "order-confirmation.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const order = fetchOrder();
+            renderOrderSummary(order);
+
+            const paymentForm = document.getElementById('paymentForm');
+            paymentForm.addEventListener('submit', handlePayment);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eec1c1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #d1c8c8;
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .headerLeft,
+        .headerRight {
+            display: flex;
+            align-items: center;
+        }
+
+        .logoContainer img {
+            height: 40px;
+        }
+
+        .headerRight {
+            gap: 15px;
+        }
+
+        .profileContainer,
+        .WishlistIcon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profileIcon img,
+        .WishlistIcon img {
+            height: 30px;
+            width: 30px;
+            top: 30px;
+
+        }
+
+        .wishlist-count {
+            background-color: #f00;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            top: -48px;
+            right: -10px;
+        }
+
+        .cart-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-container h1 {
+            margin-top: 0;
+            font-size: 2em;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #696868;
+            transition: background-color 0.3s;
+        }
+
+        .cart-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-details p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .cart-item-remove {
+            cursor: pointer;
+            color: #d9534f;
+            font-weight: bold;
+            background: none;
+            border: none;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+
+        .cart-item-remove:hover {
+            color: #c9302c;
+        }
+
+        .total-amount {
+            font-size: 1.6em;
+            margin: 20px 0;
+            text-align: right;
+            color: #ccaeae;
+        }
+
+        .place-order-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .place-order-btn:hover {
+            background-color: #45a049;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px 20px;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="headerLeft">
+            <div class="logoContainer">
+                <img src="./img/meesho.png" alt="Logo">
+            </div>
+        </div>
+        <div class="headerRight">
+            <div class="profileContainer">
+                <div class="profileIcon">
+                    <img src="./img/user.png" />
+                </div>
+                <p>Profile</p>
+            </div>
+            <div class="WishlistIcon" id="wishlistIcon">
+                <a href="./page/wishlist.html">
+                    <img src="./img/wishlist.png" alt="">
+                    <div class="wishlist-count" id="wishlistCount">0</div>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="cart-container" id="cartContainer">
+            <h1>Cart</h1>
+            <div id="cartItems"></div>
+            <div class="total-amount" id="totalAmount"></div>
+            <a class="place-order-btn" onclick="PlaceOrder()" id="placeOrderBtn">Place Order</a>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 www.mesho.com. All rights reserved.</p>
+    </footer>
+
+    <script>
+
+        function fetchCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            return cart;
+        }
+
+        function renderCart(cart) {
+            const cartItems = document.getElementById("cartItems");
+            const totalAmount = document.getElementById("totalAmount");
+            let total = 0;
+
+            const cartHTML = cart.map(item => {
+
+                total += parseFloat(item?.price);
+                return `
+                    <div class="cart-item" data-id="${item?.id}">
+                        <img src="${item?.image}" alt="${item?.title}">
+                        <div class="cart-item-details">
+                            <p>${item?.title}</p>
+                            <p>Price: $${item?.price}</p>
+                        </div>
+                        <button class="cart-item-remove" onclick="removeFromCart((${item?.id}))">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            }).join("");
+
+            cartItems.innerHTML = cartHTML;
+            totalAmount.textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(productId) {
+            let cart = fetchCart();
+            cart = cart.filter(item => item.id !== Number(productId));
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart(cart);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const cart = fetchCart();
+            renderCart(cart);
+        });
+        function PlaceOrder() {
+            let loggedIn = localStorage.getItem("loggedIn");
+            if (loggedIn === "false" || !loggedIn) {
+                window.location.href = "../page/login.html";
+            } else {
+                window.location.href = "../page/billing.html";
+            }
+        }
+
+    </script>
+</body>
+
+</html>
